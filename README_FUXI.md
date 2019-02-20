@@ -1,6 +1,9 @@
-#  本文只针对面试，GO  Day Day Up
+# 本文只针对面试，GO  Day Day Up
 
 
+
+
+# JS基础知识部分
 --类型：
   基本类型：null, undefined, boolean, number, string, symbol 。
 
@@ -45,3 +48,20 @@
   两个都是解决了改变this的指向，作用是相同的，只是传参的方式不同。除了第一个参数，call可以接收一个参数列表，apply接收一个数组。
 
   bind 和其他两个方法作用也是一致的，只是该方法会返回一个函数。并且我们可以通过 bind 实现柯里化。
+
+
+
+
+# 执行上下文
+
+JS在执行代码时候，会产生三种执行上下文：
+--全局执行上下文
+--函数执行上下文
+--eval执行上下文
+
+
+
+
+# Promise
+--Promise 是ES6新增的语法，解决了回调地狱的问题。可以把Promise看做一个状态机，初始状态是pending状态，可以通过函数resolve和reject，将状态转变为resolved 或者 rejected状态。状态一旦发生变化就不能改变。
+--then函数返回的是一个新的Promise实例，并且返回的是一个新的实例不是之前的实例。因为Promis规范除了pending状态，其他状态都不可以改变，如果返回的是一个相同的实例的话，多个then就失去了意义。
