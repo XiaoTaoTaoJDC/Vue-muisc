@@ -65,3 +65,55 @@ JS在执行代码时候，会产生三种执行上下文：
 # Promise
 --Promise 是ES6新增的语法，解决了回调地狱的问题。可以把Promise看做一个状态机，初始状态是pending状态，可以通过函数resolve和reject，将状态转变为resolved 或者 rejected状态。状态一旦发生变化就不能改变。
 --then函数返回的是一个新的Promise实例，并且返回的是一个新的实例不是之前的实例。因为Promis规范除了pending状态，其他状态都不可以改变，如果返回的是一个相同的实例的话，多个then就失去了意义。
+
+# Generator
+--函数加上一个*号表示一个 Generator函数，内部可以通过yield暂停代码，通过调用next()恢复执行。
+
+ -- function* test() {
+   let a = 1;
+   yield 2;
+   yield 3;
+ }
+ let b = test();
+ b.next(); //2
+ b.next(); //3
+
+# JS EVENT LOOP
+--JS在执行过程中会产生执行环境，这些环境会被顺序的加入执行栈中。如果遇到异步代码就会被挂起加入到队列当中也就是（TASK）,一担执行栈为空，那么Event Loop就会冲Task中取出相应的代码放入执行栈中执行。  所以从本质上说js的异步还是同步的行为。
+
+
+--微任务： process.nextTick, promise, Object.observer, Mutation.Observer,
+
+--宏任务： script, setTimeout, setInterval, setImmediate, I/O, UI rendering,
+
+正确的EVENT LOOP： 
+-- 1 执行同步代码这是属于宏任务的。
+-- 2 执行栈为空的时候，就去查询是否有微任务需要执行。
+-- 3 执行所有的微任务。
+-- 4 必要的话去渲染UI。
+-- 5 然后在进行新一轮的event Loop， 执行宏任务的一步代码。
+
+
+
+#渲染机制
+--1 处理HTML并构建DOM树，
+--2 处理CSS并构建CSSOM树，
+--3 将DOM和CSSOM树合并构建成渲染树，
+--4 根据渲染树来布局，并且计算每个节点的位置，
+--5 调用GPU绘制，合成图层，并显示屏幕上，
+
+
+# 重绘和回流
+
+--重绘： 重绘是当节点更改外观而不会影响布局的， 比如改变color
+--回流： 回流是布局或者是几何属性改变成为回流
+
+以下几个动作可能会导致性能问题：
+  改变Window字体大小
+  改变字体
+  添加或删除样式
+  文字改变
+  定位或者浮动
+  盒模型
+
+--重绘和回流和Event Loop有关
