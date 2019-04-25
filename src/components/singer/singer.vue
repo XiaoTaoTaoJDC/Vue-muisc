@@ -11,7 +11,7 @@
               :key="index"
               :item="item"
               >
-              <div class="custom-item">
+              <div class="custom-item" @click="selectItem(item)">
                 <div class="singer-icon">
                   <img :src="item.avatar" height="50" width="50">
                 </div>
@@ -31,6 +31,7 @@ import { getSingerList, ERR_OK } from 'api/singer.js'
 import Singer from 'common/js/singers.js'
 import SingerList from 'base/singerList/singerList.vue'
 import Loading from 'base/loading/loading'
+import { mapMutations } from 'vuex'
 const HOT_NAME = '热门'
 const HOT_SINGER_LENGTH = 10
 export default {
@@ -45,12 +46,15 @@ export default {
     Loading
   },
   methods: {
+    selectItem (item) {
+      this.$router.push({path: `/singerdetail/${item.value}`})
+      this.setSinger(item)
+    },
     _getSingerList () {
       this.flg = true
       getSingerList().then((res) => {
         if (ERR_OK === res.data.code) {
           this.flg = false
-          // console.log(res.data.data.list)
           this._initSingerList(res.data.data.list)
         }
       })
@@ -92,8 +96,10 @@ export default {
         return a.name.charCodeAt(0) - b.name.charCodeAt(0)
       })
       this.singerList = hot.concat(ret)
-      console.log(this.singerList)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   created () {
     this._getSingerList()

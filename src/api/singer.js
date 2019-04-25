@@ -20,4 +20,28 @@ export function getSingerList () {
     return Promise.resolve(res)
   })
 }
+export function getSingerDetail (singerId) {
+  const url = '/getSingerDetail'
+  const data = Object.assign({}, {
+    g_tk: 5381,
+    loginUin: 0,
+    hostUin: 0,
+    format: 'json',
+    inCharset: 'utf8',
+    outCharset: 'utf-8',
+    notice: 0,
+    platform: 'yqq',
+    needNewCode: 0,
+    singermid: singerId,
+    order: 'listen',
+    begin: 0,
+    num: 30,
+    songstatus: 1
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res)
+  })
+}
 export const ERR_OK = 0

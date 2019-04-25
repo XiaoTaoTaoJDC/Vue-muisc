@@ -68,7 +68,6 @@ JS在执行代码时候，会产生三种执行上下文：
 
 # Generator
 --函数加上一个*号表示一个 Generator函数，内部可以通过yield暂停代码，通过调用next()恢复执行。
-
  -- function* test() {
    let a = 1;
    yield 2;
@@ -117,3 +116,83 @@ JS在执行代码时候，会产生三种执行上下文：
   盒模型
 
 --重绘和回流和Event Loop有关
+
+
+
+# React只是总结
+  react生命周期分析 react在V16中引入fiber机制，这个机制在一定程度上影响了react的生命周期的调用，一次引入了两个api来解决此问题。
+
+
+  Fiber机制的引入就是改变了之前同步渲染改为异步渲染 ---- 在不影响体验的情况下去分段计算更新---- 提高用户的体验。
+
+
+分为两个阶段 reconciliation 和 commit  前者过程中是可以打断的，后者不能暂停，会一直到渲染完成。
+
+
+Reconciliation阶段： 
+  componentWillMount
+  componentWillReceiveProps
+  shouldComponentUpdate
+  componentWillUpdate
+commit阶段：
+  componentDidMount
+  componentDidUpdate
+  componentWillUnmount
+
+
+
+因为reconciliation可以打断所以，所以这个阶段的生命周期函数就会初选多次调用的现象，所以在这个阶段除了shouldComponentUpdate这个阶段其他生命周期避免使用。
+
+getDerivedStateFromProps用于替换componentWillReceiveProps 该函数会在初始化和update的时候被调用。
+
+V16生命周期函数用法建议
+
+class ExampleComponent extends React.Component {
+  // 用于初始化 state
+  constructor() {}
+  // 用于替换 `componentWillReceiveProps` ，该函数会在初始化和 `update` 时被调用
+  // 因为该函数是静态函数，所以取不到 `this`
+  // 如果需要对比 `prevProps` 需要单独在 `state` 中维护
+  static getDerivedStateFromProps(nextProps, prevState) {}
+  // 判断是否需要更新组件，多用于组件性能优化
+  shouldComponentUpdate(nextProps, nextState) {}
+  // 组件挂载后调用
+  // 可以在该函数中进行请求或者订阅
+  componentDidMount() {}
+  // 用于获得最新的 DOM 数据
+  getSnapshotBeforeUpdate() {}
+  // 组件即将销毁
+  // 可以在此处移除订阅，定时器等等
+  componentWillUnmount() {}
+  // 组件销毁后调用
+  componentDidUnMount() {}
+  // 组件更新后调用
+  componentDidUpdate() {}
+  // 渲染组件函数
+  render() {}
+  // 以下函数不建议使用
+  UNSAFE_componentWillMount() {}
+  UNSAFE_componentWillUpdate(nextProps, nextState) {}
+  UNSAFE_componentWillReceiveProps(nextProps) {}
+}
+
+
+
+#面试总结
+
+1，移动端解决1px问题 
+  缩放-----   :befor---:after  flexible.js淘宝移动端采取的方案  1px变粗的原因就在于一刀切的设置viewport宽度 如果能把viewport宽度设置为实际的设备物理宽度, css里的1px不就等于实际1px长了么. flexible.js就是这样干的.
+
+  <meta name=”viewport”>里面的scale值指的是对ideal viewport的缩放, flexible.js检测到IOS机型, 会算出scale = 1/devicePixelRatio, 然后设置viewport
+
+
+#移动端点透事件
+原因----- click延迟、延迟、还是延迟  （300ms）
+
+解决---  只用touch 但是需要 组织默认行为 preventDefault()
+  ----- 只用click 事件
+
+#http---https却别
+  
+
+
