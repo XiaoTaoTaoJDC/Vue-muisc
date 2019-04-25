@@ -4,9 +4,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getSingerDetail, ERR_OK } from 'api/singer'
+import { createSong } from 'common/js/song'
 export default {
   data () {
-    return {}
+    return {
+      songs: []
+    }
   },
   computed: {
     ...mapGetters([
@@ -24,9 +27,20 @@ export default {
       }
       getSingerDetail(this.singer.value).then((res) => {
         if (res.data.code === ERR_OK) {
-          console.log(res.data.data.list)
+          this.songs = this._nomalizeSong(res.data.data.list)
+          console.log(this.songs)
         }
       })
+    },
+    _nomalizeSong (list) {
+      let ret = []
+      list.forEach((item) => {
+        let {musicData} = item
+        if (musicData.songid && musicData.albumid) {
+          ret.push(createSong(musicData))
+        }
+      })
+      return ret
     }
   }
 }
