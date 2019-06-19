@@ -193,6 +193,105 @@ class ExampleComponent extends React.Component {
   ----- 只用click 事件
 
 #http---https却别
-  
 
+
+
+
+#GET和POST 的区别
+
+  --GET 发送请求是同构url发送的，POST 发送请求是通过body发送。。。
+  --GET 可以被浏览器缓存，POST不设置catch 是不会被缓存的
+  --GET 只能被url编码，POST 是支持多种编码格式的
+  --GET 在url中请求是又长度限制的，POST么有
+  --GET POST比GET请求更安全，因为参数都暴露在url中，所以不能被用来传递敏感信息。
+
+-----这是来自W3cSchools中的标砖答案。。。。。然而这不是面试官想要的结果，那么他们想要的结果是什么呢。。
+那么就让我们来趴下GET 和POST 的外衣吧， GET 和 POST 是什么么？http协议中两种发送的请求的方式。
+那么http是什么？http 是基于 tcp/ip关于数据在万维网中如何通信的协议。。
+http的底层是tcp/ip, 所以GET和POST也是TCP/IP链接 其实GET 和 POST 做的事儿是一样的，要是给GET 加上REQUSET  BODY 其实是和POST 的请求是一样的。反之也是一回事儿。。
+
+那么GET 和 POST 有一个重大的区别
+那么是什么呢这也就是面试管想要的结果---
+
+GET产生一个TCP数据包，那么POST是产生两个TCP数据包。
+
+也就是说GET 发送请求的时候会把header data一起发送出去服务器响应200 返回数据
+POST呢浏览区会先发送header，服务器响应100continue，然后在发送data 服务器响应200返回数据
+
+并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次。
+
+现在，当面试官再问你“GET与POST的区别”的时候，你的内心是不是这样的？
+
+都给我后退！！！我要开始装逼了~~~~~~~~
+
+
+######call , apply , bind
+
+//实现call
+
+function.prototype.call = function (context) {
+  var context = context || window
+  //给context添加一个属性
+  context.fu = this
+  //将context后面的参数取出来
+  var arg = [...arguments].slice(1)
+  var re = context.fu(...arg)
+  delete context.fu
+  return re
+}
+
+
+//实现apply
+
+function.prototype.apply = function (context) {
+  var context = context || window
+  //给context添加一个属性
+  context.fu = this
+  var re
+  // 需要判断是否存储第二个参数
+  // 如果存在，就将第二个参数展开
+  if(arguments[1] {
+    re = context.fu(...arguments[1])
+  }else{
+    re = context.fu()
+  }
+  //删除属性
+  delete context.fu
+  return re
+}
+
+// 实现bind 其实是和上面两个一致的，但是返回的是一个函数，那么首先我们要先判断它返回的是否是一个函数
+
+function.prototype.bind = function(context) {
+  if(typeof this !== 'function') {
+    throw new TypeError('this is a not function')
+  }
+  var _this = this
+  var arg = [...arguments].slice(1)
+  //返回一个函数
+  return function F() {
+    // 因为返回的是一个函数，所以我们需要半段，用NEW
+    if(this instanceof F) {
+      return _this new(...arg, ...arguments)
+    }else {
+      return _this.apply(context, ...arg.concat(...arguments))
+    }
+  }
+}
+
+#####实现VUE watch属性-----
+    ---相信很多人用到vue的人都知道它的双向绑定原理，给属性绑定了getter，setter属性，在属性被改变的时候，视图再次被渲染刷新。
+    那么让我们来实现Vue 的watch属性是怎么实现的。。。
+
+getter顾名思义局势获取属性值的方法，setter就是设置属性值的方法，
+当属性被 a = 1 赋值的时候，a 的原型内的setter方法就会被触发
+当console.log(a)的时候，a的原型内的getter方法就会被触发
+
+实现getter，setter
+我们不能直接给setter，getter 绑定事件函数。所以我们要借助object的属相来实现。
+那么我们选用了比较好构造的一种。
+
+
+object.defineProperty() 这个属性来实现
+首先我们来认识下 Object.defineProperty()这个方法。
 
