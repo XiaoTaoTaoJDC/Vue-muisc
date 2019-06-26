@@ -1,15 +1,34 @@
 <template>
   <div class="music-list">
     <!-- 返回 -->
-    <div class="back">
+    <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
     <!-- 歌曲信息 -->
     <h1 class="music-title" v-html="title"></h1>
-    <div class="bg-image" :style="bgStyle"></div>
+    <div class="bg-image" :style="bgStyle" ref="bgImage">
+      <div class="filter"></div>
+    </div>
+    <!-- 滑动辅助层，遮住背景图片 -->
+    <div class="bg-layer" ref="layer"></div>
+    <scroll
+      :data="songs"
+      @scroll="scroll"
+      :probe-type="probeType"
+      :listen-scroll="listenScroll"
+      class="list"
+      ref="list"
+    >
+      <div class="song-list-warper">
+        <song-list :songs="songs"></song-list>
+      </div>
+    </scroll>
   </div>
 </template>
 <script>
+import Scroll from 'base/scroll/scroll'
+import SongList from 'base/songs-list/songs-list'
+const RES_HEIGHT = 40
 export default {
   props: {
     title: {
@@ -29,18 +48,68 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      scrollY: 0
+    }
+  },
+  components: {
+    Scroll,
+    SongList
+  },
   created () {
-    console.log(this.songs)
+    this.probeType = 3
+    this.listenScroll = true
+  },
+  mounted () {
+    // 计算背景图的高度,这只scroll的偏移量
+    this.imageHeight = this.$refs['bgImage'].clientHeight
+    this.minTtanslateY = -this.imageHeight + RES_HEIGHT
+    this.$refs['list'].$el.style.top = `${this.imageHeight}px`
   },
   computed: {
     bgStyle () {
       return `background-image:url(${this.bgImage})`
+    }
+  },
+  methods: {
+    back () {
+      this.$router.back()
+    },
+    scroll (pos) {
+      this.scrollY = pos.y
+    }
+  },
+  watch: {
+    scrollY (newVal) {
+      let translateY = Math.max(this.minTtanslateY, newVal)
+      let zIndex = 0
+      let scale = 1
+      // 细线下拉图片无缝贴合放大效果
+      const percent = Math.abs(newVal / this.imageHeight)
+      if (newVal > 0) {
+        scale = 1 + percent
+        zIndex = 10
+      }
+      this.$refs.layer.style['transform'] = `translate3d(0,${translateY}px,0)`
+      // 实现图片overflow hidden 效果
+      if (newVal < this.minTtanslateY) {
+        zIndex = 10
+        this.$refs['bgImage'].style.paddingTop = 0
+        this.$refs['bgImage'].style.height = `${RES_HEIGHT}px`
+      } else {
+        this.$refs['bgImage'].style.paddingTop = '70%'
+        this.$refs['bgImage'].style.height = 0
+      }
+      this.$refs.bgImage.style.zIndex = zIndex
+      this.$refs.bgImage.style['transform'] = `scale(${scale})`
     }
   }
 }
 </script>
 <style lang="stylus" scoped>
   @import '~common/stylus/variable'
+  @import "~common/stylus/mixin"
   .music-list
     position: fixed
     z-index: 100
@@ -77,4 +146,23 @@ export default {
       padding-top: 70%
       transform-origin: top
       background-size: cover
+      .filter
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        width: 100%
+        background: rgba(7, 17, 27, 0.4)
+    .bg-layer
+      position: relative
+      height: 100%
+      background: $color-background
+    .list
+      position: fixed
+      top: 0
+      bottom: 0
+      width: 100%
+      background: $color-background
+      .song-list-wrapper
+        padding: 20px 30px
 </style>
