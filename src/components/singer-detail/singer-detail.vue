@@ -41,7 +41,7 @@ export default {
       getSingerDetail(this.singer.value).then((res) => {
         if (res.data.code === ERR_OK) {
           this.songs = this._nomalizeSong(res.data.data.list)
-          console.log(this.songs)
+          // console.log(this.songs)
         }
       })
     },

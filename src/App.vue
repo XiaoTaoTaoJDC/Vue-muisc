@@ -5,12 +5,14 @@
     <transition :name="transitionName">
       <router-view class="child-view"></router-view>
     </transition>
+    <player></player>
   </div>
 </template>
 
 <script>
 import MHeader from 'components/m-header/m-header.vue'
 import Tab from 'components/tab/tab.vue'
+import Player from 'components/player/player'
 export default {
   data () {
     return {
@@ -19,7 +21,8 @@ export default {
   },
   components: {
     MHeader,
-    Tab
+    Tab,
+    Player
   },
   watch: {
     '$route' (to, from) {

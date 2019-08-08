@@ -95,7 +95,7 @@ export default {
           this.data.push(res.data.radioList)
           this.data.push(res.data.songList)
         }
-        console.log(res)
+        // console.log(res)
       })
     }
   }

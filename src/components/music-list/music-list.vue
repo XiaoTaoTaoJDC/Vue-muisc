@@ -26,7 +26,7 @@
       ref="list"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select="songSelect"></song-list>
       </div>
     </scroll>
     <loading :flg="!songs.length>0"></loading>
@@ -87,6 +87,9 @@ export default {
     },
     scroll (pos) {
       this.scrollY = pos.y
+    },
+    songSelect (item, index) {
+      console.log(item, index)
     }
   },
   watch: {
