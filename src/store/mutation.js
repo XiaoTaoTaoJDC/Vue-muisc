@@ -12,6 +12,9 @@ const mutation = {
   },
   [types.SET_PLAYLIST] (state, list) {
     state.playList = list
+  },
+  [types.SET_CURRENT_INDEX] (state, index) {
+    state.currentIndex = index
   }
 }
 export default mutation
