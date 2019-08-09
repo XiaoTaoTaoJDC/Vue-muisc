@@ -7,6 +7,6 @@ export const selectPlay = ({commit, state}, {list, index}) => {
   commit(types.SET_FULL_SCREEN, true)
   // 设置当前播放的索引
   commit(types.SET_CURRENT_INDEX, index)
-
+  // 设置当前播放状态播放OR暂停
   commit(types.SET_PLAYING_STATE, true)
 }

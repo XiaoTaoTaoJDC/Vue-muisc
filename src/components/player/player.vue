@@ -1,8 +1,7 @@
 <template>
   <div class="player" v-show="playList.length > 0">
-    我是播放组件
     <div class="normal-player" v-show="fullScreen">
-      <!-- 北京模糊层 -->
+      <!-- 背景模糊层 -->
       <div class="background">
         <img :src="currentSong.img" alt="" width="100%" height="100%"/>
       </div>
@@ -130,4 +129,14 @@ export default {
     transform: rotate(0)
   100%
     transform: rotate(360deg)
+// .normal-enter-active, .normal-leave-active
+//   transition: all 0.4s
+//   .top, .bottom
+//   transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+// .normal-enter, .normal-leave-to
+//   opacity: 0
+//   .top
+//     transform: translate3d(0, -100px, 0)
+//   .bottom
+//     transform: translate3d(0, 100px, 0)
 </style>
