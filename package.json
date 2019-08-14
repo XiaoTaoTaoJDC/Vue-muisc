@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "better-scroll": "^1.13.2",
+    "create-keyframe-animation": "^0.1.0",
     "cube-ui": "^1.12.6",
     "fastclick": "^1.0.6",
     "stylus": "^0.54.5",

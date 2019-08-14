@@ -1,5 +1,11 @@
 <template>
   <div class="player" v-show="playList.length > 0">
+    <transition name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
     <div class="normal-player" v-show="fullScreen">
       <!-- 背景模糊层 -->
       <div class="background">
@@ -10,8 +16,8 @@
         <div class="back" @click="back">
           <i class="icon-back"></i>
         </div>
-        <h1 class="title"></h1>
-        <h2 class="subtitle"></h2>
+        <h1 class="title" v-html="currentSong.name"></h1>
+        <h2 class="subtitle" v-html="currentSong.singer"></h2>
       </div>
       <!-- 中间唱片部分 -->
       <div class="middle">
@@ -21,14 +27,63 @@
               <img :src="currentSong.img" alt="" class="image">
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">
+              <!-- {{playingLyric}} -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 底部按钮 -->
+       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="progress-wrapper">
+          <span class="time time-l"></span>
+          <!--播放进度条-->
+          <div class="progress-bar-wrapper">
+            <!-- <progress-bar></progress-bar> -->
+          </div>
+          <span class="time time-r"></span>
+        </div>
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left" >
+            <i class="icon-prev" ></i>
+          </div>
+          <div class="icon i-center">
+            <i class="icon-pause"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-next"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon icon-not-favorite"></i>
+          </div>
         </div>
       </div>
     </div>
-    <div class="mini-player" v-show="!fullScreen"></div>
+    </transition>
+    <transition name="mini">
+    <div class="mini-player" v-show="!fullScreen" @click="openFullScreen()">
+      <div class="icon">
+        <img alt="" :src="currentSong.img" width="40" height="40" :class="cdPlayer">
+      </div>
+      <div class="text">
+        <h2 class="name" v-html="currentSong.name"></h2>
+        <p class="desc" v-html="currentSong.singer"></p>
+      </div>
+    </div>
+    </transition>
   </div>
 </template>
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import animations from 'create-keyframe-animation'
 export default {
   computed: {
     ...mapGetters(['fullScreen', 'playList', 'currentIndex', 'playing']),
@@ -45,6 +100,65 @@ export default {
   methods: {
     back () {
       this.setFullScreen(false)
+    },
+    openFullScreen () {
+      this.setFullScreen(true)
+    },
+    enter (el, done) {
+      const {x, y, scale} = this._getPosAndScale()
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0,0,0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0,0,0) scale(1.1)`
+        }
+      }
+      animations.registerAnimation({
+        name: 'move',
+        animation,
+        presets: {
+          duration: 400,
+          easing: 'linear'
+        }
+      })
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+    },
+    afterEnter () {
+      animations.unregisterAnimation('move')
+      this.$refs.cdWrapper.style.animation = ''
+    },
+    leave (el, done) {
+      const {x, y, scale} = this._getPosAndScale()
+      this.$refs.cdWrapper.style.transition = 'all 0.4s'
+      this.$refs.cdWrapper.style['transform'] = `translate3D(${x}px,${y}px,0) scale(${scale})`
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
+    },
+    afterLeave () {
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style['transform'] = ''
+    },
+    // 获取动画的其实位置
+    _getPosAndScale () {
+      // 底部小图的位置
+      const targetWidth = 40
+      const paddingLeft = 40
+      const paddingBottom = 30
+      // 中间大图距离顶部的位置
+      const paddingTop = 80
+      // 中间大图的宽度
+      const width = window.innerWidth * 0.8
+      // 缩放的尺寸
+      const scale = targetWidth / width
+      const x = -(window.innerWidth / 2 - paddingLeft)
+      const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+
+      return {
+        x, y, scale
+      }
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
@@ -87,6 +201,19 @@ export default {
             font-size: $font-size-large-x
             color: $color-theme
             transform: rotate(-90deg)
+        .title
+          width: 70%
+          margin: 0 auto
+          line-height: 40px
+          text-align: center
+          no-wrap()
+          font-size: $font-size-large
+          color: $color-text
+        .subtitle
+          line-height: 20px
+          text-align: center
+          font-size: $font-size-medium
+          color: $color-text
       .middle
         position: fixed
         width: 100%
@@ -124,19 +251,127 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
+          .playing-lyric-wrapper
+            width: 80%
+            margin: 30px auto 0 auto
+            overflow: hidden
+            text-align: center
+            .playing-lyric
+              height: 20px
+              line-height: 20px
+              font-size: $font-size-medium
+              color: $color-text-l
+      .bottom
+        position: absolute
+        bottom: 50px
+        width: 100%
+        .dot-wrapper
+          text-align: center
+          font-size: 0
+          .dot
+            display: inline-block
+            vertical-align: middle
+            margin: 0 4px
+            width: 8px
+            height: 8px
+            border-radius: 50%
+            background: $color-text-l
+            &.active
+              width: 20px
+              border-radius: 5px
+              background: $color-text-ll
+        .progress-wrapper
+          display: flex
+          align-items: center
+          width: 80%
+          margin: 0px auto
+          padding: 10px 0
+          .time
+            color: $color-text
+            font-size: $font-size-small
+            flex: 0 0 30px
+            line-height: 30px
+            width: 30px
+            &.time-l
+              text-align: left
+            &.time-r
+              text-align: right
+          .progress-bar-wrapper
+            flex: 1
+        .operators
+          display: flex
+          align-items: center
+          .icon
+            flex: 1
+            color: $color-theme
+            &.disable
+              color: $color-theme-d
+            i
+              font-size: 30px
+          .i-left
+            text-align: right
+          .i-center
+            padding: 0 20px
+            text-align: center
+            i
+              font-size: 40px
+          .i-right
+            text-align: left
+          .icon-favorite
+            color: $color-sub-theme
+    .mini-player
+      display: flex
+      align-items: center
+      position: fixed
+      left: 0
+      bottom: 0
+      z-index: 180
+      width: 100%
+      height: 60px
+      background: $color-background-highlight
+      .icon
+        flex: 0 0 40px
+        width: 40px
+        padding: 0 10px 0 20px
+        img
+          border-radius: 50%
+          &.play
+            animation: rotate 10s linear infinite
+          &.pause
+            animation-play-state: paused
+      .text
+        display: flex
+        flex-direction: column
+        justify-content: center
+        flex: 1
+        line-height: 20px
+        overflow: hidden
+        .name
+          margin-bottom: 2px
+          no-wrap()
+          font-size: $font-size-medium
+          color: $color-text
+        .desc
+          no-wrap()
+          font-size: $font-size-small
+          color: $color-text-d
 @keyframes rotate
   0%
     transform: rotate(0)
   100%
     transform: rotate(360deg)
-// .normal-enter-active, .normal-leave-active
-//   transition: all 0.4s
-//   .top, .bottom
-//   transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
-// .normal-enter, .normal-leave-to
-//   opacity: 0
-//   .top
-//     transform: translate3d(0, -100px, 0)
-//   .bottom
-//     transform: translate3d(0, 100px, 0)
+.normal-enter-active, .normal-leave-active
+  transition: all 0.4s
+  .top, .bottom
+    transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+.normal-enter, .normal-leave-to
+  opacity: 0
+  .top
+    transform: translate3d(0, -100px, 0)
+  .bottom
+    transform: translate3d(0, 100px, 0)
+.mini-enter-active, .mini-leave-active
+  transition: all 0.4s
+  .mini-enter, .mini-leave-to
+    opacity: 0
 </style>
