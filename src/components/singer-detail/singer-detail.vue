@@ -30,7 +30,6 @@ export default {
   },
   created () {
     this._getSingerDetail()
-    console.log(this.singer)
   },
   methods: {
     _getSingerDetail () {

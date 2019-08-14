@@ -90,7 +90,6 @@ export default {
       this.scrollY = pos.y
     },
     songSelect (item, index) {
-      console.log(item, index)
       this.selectPlay({
         list: this.songs,
         index: index

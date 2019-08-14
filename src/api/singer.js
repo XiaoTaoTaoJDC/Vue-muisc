@@ -44,4 +44,23 @@ export function getSingerDetail (singerId) {
     return Promise.resolve(res)
   })
 }
+export function getSongerVkey (songmid) {
+  const url = '/getSingerVkey'
+  const data = Object.assign({}, {
+    loginUin: 3051522991,
+    format: 'json',
+    platform: 'yqq',
+    needNewCode: 0,
+    cid: 205361747,
+    uin: 3051522991,
+    guid: 5931742855,
+    songmid: songmid,
+    filename: `C400${songmid}.m4a`
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res)
+  })
+}
 export const ERR_OK = 0

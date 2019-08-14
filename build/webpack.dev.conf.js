@@ -93,8 +93,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
-      app.get('/getSingerDetail', function(req, res) {
+      app.get('/getSingerDetail', function (req, res) {
         const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/',
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data) // axios 返回的数据在 response.data，要把数据透传到我们自定义的接口里面 res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 获取歌曲的vkey
+      app.get('/getSingerVkey', function (req, res) {
+        const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
         axios.get(url, {
           headers: {
             referer: 'https://y.qq.com/',

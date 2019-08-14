@@ -79,6 +79,7 @@
       </div>
     </div>
     </transition>
+    <audio :src="currentSong.url" ref="audio"></audio>
   </div>
 </template>
 <script>
@@ -86,7 +87,13 @@ import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 export default {
   computed: {
-    ...mapGetters(['fullScreen', 'playList', 'currentIndex', 'playing']),
+    ...mapGetters([
+      'fullScreen',
+      'playList',
+      'currentIndex',
+      'playing',
+      'currentsonger'
+    ]),
     currentSong () {
       return this.playList[this.currentIndex] || {}
     },

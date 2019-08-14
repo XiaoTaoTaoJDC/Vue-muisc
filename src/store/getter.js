@@ -9,6 +9,6 @@ export const playing = state => state.playing
 
 export const currentIndex = state => state.currentIndex
 
-export const currentSong = (state) => {
+export const currentsonger = (state) => {
   return state.playList[state.currentIndex] || {}
 }
