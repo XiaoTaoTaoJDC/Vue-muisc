@@ -91,8 +91,7 @@ export default {
       'fullScreen',
       'playList',
       'currentIndex',
-      'playing',
-      'currentsonger'
+      'playing'
     ]),
     currentSong () {
       return this.playList[this.currentIndex] || {}
